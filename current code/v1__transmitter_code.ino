@@ -1,6 +1,6 @@
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
-#include <MPU6050.h>
+#include <MPU6050.h> //use the adafruit version instead 
 #include <TinyGPSPlus.h>
 #include <SoftwareSerial.h>
 #include <SPI.h>
@@ -31,8 +31,8 @@ unsigned long lastDeployCheck = 0;
 
 // --- Setup ---
 void setup() {
-  Serial.begin(9600);
-  gpsSerial.begin(9600);
+  Serial.begin(115200);
+  gpsSerial.begin(115200);
 
   pinMode(PYRO_PIN, OUTPUT);
   digitalWrite(PYRO_PIN, LOW);
@@ -92,7 +92,7 @@ void loop() {
   float dt = (currentTime - lastTime) / 1000.0;
   lastTime = currentTime;
 
-  float altitude = bmp.readAltitude();
+
   int16_t ax, ay, az, gx, gy, gz;
   mpu.getMotion9(&ax, &ay, &az, &gx, &gy, &gz, nullptr, nullptr, nullptr);
 
@@ -107,7 +107,8 @@ void loop() {
   float pitch = atan2(ax_mps2, sqrt(ay_mps2 * ay_mps2 + az_mps2 * az_mps2)) * 180 / PI;
   float roll  = atan2(ay_mps2, az_mps2) * 180 / PI;
   yaw += (gz / 131.0) * dt;
-
+  float altitude = bmp.readAltitude();
+  
   if (!baseCaptured && gps.location.isValid()) {
     baseAltitude = altitude;
     baseCaptured = true;
